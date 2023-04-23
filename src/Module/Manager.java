@@ -3,7 +3,6 @@ package Module;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
 public class Manager {
     private int nextId;
     private HashMap<Integer, Task > tasks = new HashMap<>();
