@@ -1,9 +1,11 @@
 package Module;
+import java.util.Objects;
+
 public class Task {
-    private int id;
-    private String title;
-    private String description;
-    private String status = "NEW";
+    protected int id;
+    protected String title;
+    protected String description;
+    protected String status = "NEW";
 
     public Task(int id, String title, String description, String status) {
         this.id = id;
@@ -46,5 +48,30 @@ public class Task {
         this.status = status;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return getId() == task.getId() && Objects.equals(getTitle(), task.getTitle()) && Objects.equals(getDescription(),
+                task.getDescription()) && Objects.equals(getStatus(), task.getStatus());
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 17;
+        if (title != null) {
+            hash = hash + title.hashCode();
+        }
+        hash = hash * 31;
+        if (description != null) {
+            hash = hash + description.hashCode();
+        }
+        if (status != null) {
+            hash = hash + status.hashCode();
+        }
+        hash = hash * 31 + id;
+        return hash;
+    }
 
 }
