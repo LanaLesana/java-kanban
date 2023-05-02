@@ -1,7 +1,11 @@
 package Module;
-import Service.Manager;
+import Service.TaskManager;
+import Service.InMemoryTaskManager;
+import Service.InMemoryHistoryManager;
 
 import java.util.ArrayList;
+import java.util.List;
+
 
 public class Main {
 
@@ -9,22 +13,23 @@ public class Main {
 
 
 
-        Manager manager = new Manager();
-        //ArrayList<SubTask> subtasks = new ArrayList<>();
+        TaskManager taskManager = new InMemoryTaskManager();
+        //InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
+
 
         Epic epicWithOneSubtask = new Epic(1, "Вылечить кота", "Описание",new ArrayList<>());
         Epic epicWithTwoSubtask = new Epic(2, "Покрасить стену", "Описание", new ArrayList<>());
 
-        SubTask catInVet = new SubTask(3, "Отнести кота в ветеринарку", "Описание", "NEW",1);
-        SubTask buyPaint = new SubTask(4, "Купить краску", "Описание", "NEW", 2);
-        SubTask paintWall = new SubTask(5, "Закрасить стену", "Описание", "NEW", 2);
+        SubTask catInVet = new SubTask(3, "Отнести кота в ветеринарку", "Описание", TaskStatus.NEW,1);
+        SubTask buyPaint = new SubTask(4, "Купить краску", "Описание", TaskStatus.NEW, 2);
+        SubTask paintWall = new SubTask(5, "Закрасить стену", "Описание", TaskStatus.NEW, 2);
 
 
-        manager.addEpic(epicWithOneSubtask);
-        manager.addEpic(epicWithTwoSubtask);
-        manager.addSubTask(catInVet);
-        manager.addSubTask(buyPaint);
-        manager.addSubTask(paintWall);
+        taskManager.addEpic(epicWithOneSubtask);
+        taskManager.addEpic(epicWithTwoSubtask);
+        taskManager.addSubTask(catInVet);
+        taskManager.addSubTask(buyPaint);
+        taskManager.addSubTask(paintWall);
 
         epicWithOneSubtask.getSubtasks().add(catInVet);
         epicWithTwoSubtask.getSubtasks().add(buyPaint);
@@ -36,24 +41,27 @@ public class Main {
 
         System.out.println("Вторая проверка");
 
-        catInVet.setStatus("DONE");
-        buyPaint.setStatus("DONE");
+        catInVet.setStatus(TaskStatus.DONE);
+        buyPaint.setStatus(TaskStatus.DONE);
 
-        manager.updateEpic(epicWithOneSubtask);
-        manager.updateEpic(epicWithTwoSubtask);
+        taskManager.updateEpic(epicWithOneSubtask);
+        taskManager.updateEpic(epicWithTwoSubtask);
 
         System.out.println(epicWithOneSubtask);
         System.out.println(epicWithTwoSubtask);
 
         System.out.println("Третья проверка");
 
-        manager.removeEpicById(epicWithOneSubtask.getId());
-        manager.removeSubTaskById(paintWall.getId());
+        taskManager.removeEpicById(epicWithOneSubtask.getId());
+        taskManager.removeSubTaskById(paintWall.getId());
 
 
 
-        System.out.println(manager.getEpicById(epicWithOneSubtask.getId()));
-        System.out.println(manager.getEpicById(epicWithTwoSubtask.getId()));
+        System.out.println(taskManager.getEpicById(epicWithOneSubtask.getId()));
+        System.out.println(taskManager.getEpicById(epicWithTwoSubtask.getId()));
+
+        System.out.println("Проверка истории просмотров");
+        System.out.println(taskManager.getUserHistory());
 
 
 
