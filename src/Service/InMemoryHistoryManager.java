@@ -1,19 +1,18 @@
 package Service;
 import Module.Task;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
-public class InMemoryHistoryManager implements HistoryManager{
-    private List<Task> userHistory = new ArrayList<>();
+public class InMemoryHistoryManager implements HistoryManager {
+    private final LinkedList<Task> userHistory = new LinkedList<>();
 
     @Override
     public void add(Task task) {
-        if (userHistory.size() > 9) {
-            userHistory.remove(0);
-            userHistory.add(task);
-        }else {
-            userHistory.add(task);
+        if (userHistory.size() > 10) {
+            userHistory.removeFirst();
         }
+        userHistory.add(task);
+
 
     }
     @Override
