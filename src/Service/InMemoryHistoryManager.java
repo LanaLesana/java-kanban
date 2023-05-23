@@ -3,31 +3,36 @@ import Module.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    //private final LinkedList<Task> userHistory = new LinkedList<>();
-    private final HashMap<Integer, Node> userHistory = new HashMap<>();
+    private final List<Task> userHistory = new ArrayList<>();
+    private final HashMap<Integer, Node> userHistoryMap = new HashMap<>();
+    private final CustomLinkedList<Node> customLinkedList = new CustomLinkedList<>();
 
     @Override
     public void add(Task task) {
-        if (userHistory.containsKey(task.getId())) {
-            userHistory.removeNode(userHistory.get(task.getId()));
+        if (task!= null && userHistoryMap.containsKey(task.getId())) {
+            customLinkedList.removeNode(userHistoryMap.get(task.getId()));
         }
-        userHistory.put(task.getId(), new Node<>(task));
+        Node nodeWithTask = new Node<>(task);
+        customLinkedList.linkLast(nodeWithTask);
+        userHistoryMap.put(task.getId(), nodeWithTask);
 
 
     }
 
     @Override
     public List<Task> getHistory() {
-        return userHistory;
+        return customLinkedList.getTasks();
     }
 
     @Override
     public void remove(int id) {
-        userHistory.remove(id);
+        if(userHistoryMap.containsKey(id)) {
+            customLinkedList.removeNode(userHistoryMap.get(id));
+            userHistoryMap.remove(id);
+        }
     }
 
     class CustomLinkedList<T> {
@@ -35,8 +40,8 @@ public class InMemoryHistoryManager implements HistoryManager {
         public Node<T> tail;
         private int size = 0;
 
-        public void linkLast(T data) {
-            Node<T> newNode = new Node<>(data);
+        public void linkLast(Node<T> newNode) {
+            //Node<T> newNode = new Node<>(data);
             if (head == null) {
                 head = newNode;
                 tail = newNode;
@@ -49,16 +54,17 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
 
 
-        public void getTasks() {
-            List<T> tasksList = new ArrayList<>();
+        public List<Task> getTasks() {
+            List<Task> tasksList = new ArrayList<>();
             Node<T> current = head;
 
             while (current != null) {
-                tasksList.add(current.data);
+                Task task = (Task) current.data;
+                tasksList.add(task);
                 current = current.next;
             }
 
-
+            return tasksList;
         }
 
         public void removeNode(Node<T> node) {
