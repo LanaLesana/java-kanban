@@ -12,7 +12,10 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void add(Task task) {
-        if (task!= null && userHistoryMap.containsKey(task.getId())) {
+        if (task== null) {
+            return;
+        }
+        if (userHistoryMap.containsKey(task.getId())) {
             customLinkedList.removeNode(userHistoryMap.get(task.getId()));
         }
         Node nodeWithTask = new Node<>(task);
@@ -41,7 +44,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         private int size = 0;
 
         public void linkLast(Node<T> newNode) {
-            //Node<T> newNode = new Node<>(data);
             if (head == null) {
                 head = newNode;
                 tail = newNode;
@@ -73,10 +75,12 @@ public class InMemoryHistoryManager implements HistoryManager {
             }
             if (node == head) {
                 head = node.next;
+                node.next.prev = null;
             }
 
             if (node == tail) {
                 tail = node.prev;
+                node.prev.next = null;
             }
 
             if (node.prev != null) {
