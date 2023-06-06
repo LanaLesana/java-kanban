@@ -9,6 +9,9 @@ import java.util.List;
 
 public interface TaskManager {
 
+    public HashMap<Integer, Task> getTasks();
+    public HashMap<Integer, SubTask> getSubTasks();
+    public HashMap<Integer, Epic> getEpics();
     public void addTask (Task task);
     public void addEpic (Epic epic);
     public void addSubTask (SubTask subtask);

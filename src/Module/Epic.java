@@ -1,4 +1,6 @@
 package Module;
+import Service.TaskType;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -23,15 +25,24 @@ public class Epic extends Task {
         return subtaskIds;
     }
 
+    //@Override
+    //public String toString() {
+      //  return "Epic{" +
+          //      "id=" + getId() +
+        //        ", title='" + getTitle() + '\'' +
+              //  ", description='" + getDescription() + '\'' +
+            //    ", status='" + getStatus() + '\'' +
+                //", subtasks=" + subtasks +
+                //'}';
+    //}
+
     @Override
     public String toString() {
-        return "Epic{" +
-                "id=" + getId() +
-                ", title='" + getTitle() + '\'' +
-                ", description='" + getDescription() + '\'' +
-                ", status='" + getStatus() + '\'' +
-                ", subtasks=" + subtasks +
-                '}';
+        return getId() + ", "
+                + TaskType.EPIC + ", "
+                + getTitle() + ", " +
+                getStatus()+ ", " +
+                getDescription();
     }
 
     @Override

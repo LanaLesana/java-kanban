@@ -1,4 +1,6 @@
 package Module;
+import Service.TaskType;
+
 import java.util.Objects;
 
 public class Task {
@@ -72,6 +74,15 @@ public class Task {
         }
         hash = hash * 31 + id;
         return hash;
+    }
+
+    @Override
+    public String toString() {
+        return getId() + ", "
+                + TaskType.TASK + ", "
+                + getTitle() + ", " +
+                getStatus() + ", " +
+                getDescription();
     }
 
 }

@@ -1,4 +1,6 @@
 package Module;
+import Service.TaskType;
+
 import java.util.Objects;
 
 public class SubTask extends Task {
@@ -30,5 +32,15 @@ public class SubTask extends Task {
         int result = super.hashCode();
         result = 31 * result + epicId;
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return getId() + ", "
+                + TaskType.SUBTASK + ", "
+                + getTitle() + ", " +
+                getStatus() + ", " +
+                getDescription()+ ", " +
+                getEpicId();
     }
 }
