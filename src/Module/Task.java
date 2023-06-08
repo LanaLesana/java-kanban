@@ -4,12 +4,17 @@ import Service.TaskType;
 import java.util.Objects;
 
 public class Task {
-    protected int id;
+    protected Integer id;
     protected String title;
     protected String description;
     protected TaskStatus status = TaskStatus.NEW;
 
-    public Task(int id, String title, String description, TaskStatus status) {
+    public Task(String title, String description, TaskStatus status) {
+        this.title = title;
+        this.description = description;
+        this.status = status;
+    }
+    public Task(Integer id, String title, String description, TaskStatus status) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -18,11 +23,11 @@ public class Task {
 
 
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

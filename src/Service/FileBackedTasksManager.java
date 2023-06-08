@@ -5,7 +5,7 @@ import Module.Epic;
 import Module.Task;
 import Module.SubTask;
 import Module.TaskStatus;
-
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,26 +20,38 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
     public static void main(String[] args) {
         System.out.println("Спринт 6. Тестирование.");
-        FileBackedTasksManager fileBackedTasksManager = loadFromFile(new File("service/history.cvs"));
+        FileBackedTasksManager fileBackedTasksManager = loadFromFile(new File("/Users/olesia.b/IdeaProjects/java-kanban/src/Service/history.csv"));
 
         fileBackedTasksManager.addTask(new Task(1, "Погулять", "Описание задачи 1", TaskStatus.NEW));
-        fileBackedTasksManager.addTask(new Task(2, "Позавтракать", "Описание задачи 2", TaskStatus.NEW));
-        fileBackedTasksManager.addSubTask(new SubTask(4, "Купить форму", "Описание подзадачи 4", TaskStatus.NEW, 4));
-        fileBackedTasksManager.addSubTask(new SubTask(5, "Купить протеин", "Описание подзадачи 5", TaskStatus.NEW, 4));
-        fileBackedTasksManager.addEpic(new Epic(3, "Похудеть", "Описание эпика 3", new ArrayList<>()));
+        fileBackedTasksManager.addTask(new Task(2,"Позавтракать", "Описание задачи 2", TaskStatus.NEW));
+
+        fileBackedTasksManager.addEpic(new Epic( 4,"Похудеть", "Описание эпика 3"));
+
+        fileBackedTasksManager.addSubTask(new SubTask( 5,"Купить форму", "Описание подзадачи 4", TaskStatus.NEW, 4));
+        fileBackedTasksManager.addSubTask(new SubTask( 6,"Купить протеин", "Описание подзадачи 5", TaskStatus.NEW, 4));
+
 
         fileBackedTasksManager.getTaskById(1);
         fileBackedTasksManager.getTaskById(2);
-        fileBackedTasksManager.getSubTaskById(4);
-        fileBackedTasksManager.getEpicById(3);
+        fileBackedTasksManager.getSubTaskById(5);
+        fileBackedTasksManager.getEpicById(4);
 
         System.out.println(fileBackedTasksManager.getTasks());
         System.out.println(fileBackedTasksManager.getSubTasks());
         System.out.println(fileBackedTasksManager.getEpics());
         System.out.println(fileBackedTasksManager.getUserHistory());
 
-        fileBackedTasksManager.removeSubTaskById(4);
+        fileBackedTasksManager.removeSubTaskById(5);
         System.out.println(fileBackedTasksManager.getSubTasks());
+
+        fileBackedTasksManager.save();
+
+        System.out.println("Проверка восстановленной информации"); //Не работает. Не вытаскивает из файла строки. Не понимаю, почему.
+        fileBackedTasksManager = FileBackedTasksManager.loadFromFile(new File("/Users/olesia.b/IdeaProjects/java-kanban/src/Service/history.csv"));
+        System.out.println(fileBackedTasksManager.getTasks());
+        System.out.println(fileBackedTasksManager.getSubTasks());
+        System.out.println(fileBackedTasksManager.getEpics());
+        System.out.println(fileBackedTasksManager.getUserHistory());
 
 
     }
@@ -168,8 +180,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
 
     private void save() {
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("history.cvs", true));
-             BufferedReader bufferedReader = new BufferedReader(new FileReader("history.cvs"))) {
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("history.csv", false));
+             BufferedReader bufferedReader = new BufferedReader(new FileReader("history.csv"))) {
 
             if (bufferedReader.readLine() == null) {
                 String header = ("id,type,name,status,description,epic" + "\n");
@@ -231,10 +243,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
         List<String> listOfStrings = new ArrayList<>();
 
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file,StandardCharsets.UTF_8))) {
+            String line =  bufferedReader.readLine();
+            while (line != null) {
                 listOfStrings.add(line);
+                line = bufferedReader.readLine();
             }
             
         } catch (IOException exception) {
@@ -260,11 +273,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                 }
             }
 
-            String history = listOfStrings.get(listOfStrings.size() - 1);
-            List<Integer> historyId = historyFromString(history);
-            for (Integer id : historyId) {
-                fileBackedTasksManager.addHistory(id);
+            if(!listOfStrings.isEmpty()) {
+                String history = listOfStrings.get(listOfStrings.size() - 1);
+                List<Integer> historyId = historyFromString(history);
+                for (Integer id : historyId) {
+                    fileBackedTasksManager.addHistory(id);
 
+                }
             }
             return fileBackedTasksManager;
         }
