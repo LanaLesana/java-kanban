@@ -7,6 +7,7 @@ import Module.SubTask;
 import Module.TaskStatus;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -180,8 +181,16 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
 
     private void save() {
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("history.csv", false));
-             BufferedReader bufferedReader = new BufferedReader(new FileReader("history.csv"))) {
+        try {
+        Files.deleteIfExists(Path.of("/Users/olesia.b/IdeaProjects/java-kanban/src/Service/history.csv"));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        File dir = new File("/Users/olesia.b/IdeaProjects/java-kanban/src/Service/history.csv");
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(dir, true));
+             BufferedReader bufferedReader = new BufferedReader(new FileReader(dir))) {
 
             if (bufferedReader.readLine() == null) {
                 String header = ("id,type,name,status,description,epic" + "\n");
@@ -213,7 +222,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
     private static Task taskFromString(String value) {
         String[] split = value.split(",");
-        Task task = new Task(Integer.valueOf(split[0]), split[2], split[4], TaskStatus.valueOf(split[3]));
+        Task task = new Task(Integer.parseInt(split[0]), split[2], split[4], TaskStatus.valueOf(split[3]));
         return task;
     }
 
@@ -222,7 +231,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         List<String> listOfStrings = new ArrayList<>();
 
         for (Task task : tasks) {
-            listOfStrings.add(task.toString());
+            listOfStrings.add(task.getId().toString());
         }
         String stringHistory = String.join(",", listOfStrings);
         return stringHistory;
@@ -232,7 +241,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         List<Integer> historyList = new ArrayList<>();
         String[] historyArray = value.split(",");
         for (String str : historyArray) {
-            historyList.add(Integer.valueOf(str));
+            historyList.add(Integer.parseInt(str));
         }
         return historyList;
     }
@@ -257,17 +266,17 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
 
 
-            for (int i = 0; i < listOfStrings.size() - 2; i++) {
+            for (int i = 1; i < listOfStrings.size() - 2; i++) {
                 Task task = taskFromString(listOfStrings.get(i));
 
-                if (task.getTitle().equals(String.valueOf(TaskType.TASK))) {
+                if (task.getTitle().toUpperCase().equals(String.valueOf(TaskType.TASK))) {
                     fileBackedTasksManager.addTaskFromFile(task.getId(), task);
 
-                } else if (task.getTitle().equals(String.valueOf(TaskType.SUBTASK))) {
+                } else if (task.getTitle().toUpperCase().equals(String.valueOf(TaskType.SUBTASK))) {
                     SubTask subtask = (SubTask) task;
                     fileBackedTasksManager.addSubTaskFromFile(task.getId(), subtask);
 
-                } else if (task.getTitle().equals(String.valueOf(TaskType.EPIC))) {
+                } else if (task.getTitle().toUpperCase().equals(String.valueOf(TaskType.EPIC))) {
                     Epic epic = (Epic) task;
                     fileBackedTasksManager.addEpicFromFile(task.getId(), epic);
                 }

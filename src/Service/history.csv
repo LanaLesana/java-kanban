@@ -1,0 +1,7 @@
+id,type,name,status,description,epic
+1,TASK,Погулять,NEW,Описание задачи 1
+2,TASK,Позавтракать,NEW,Описание задачи 2
+6,SUBTASK,Купить протеин,NEW,Описание подзадачи 5,4
+0,EPIC,Похудеть,IN_PROGRESS,Описание эпика 3
+
+1,2
