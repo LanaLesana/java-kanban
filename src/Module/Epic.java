@@ -16,6 +16,10 @@ public class Epic extends Task {
     public Epic(Integer id, String title, String description) {
         super(title, description, TaskStatus.IN_PROGRESS);
     }
+    public Epic(Task task) {
+        super(task.getId(), task.getTitle(), task.getDescription(), task.getStatus());
+
+    }
 
     public ArrayList<SubTask> getSubtasks() {
         return subtasks;
@@ -42,10 +46,10 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return getId() + ","
-                + TaskType.EPIC + ","
-                + getTitle() + "," +
-                getStatus()+ "," +
+        return getId() + ", "
+                + TaskType.EPIC + ", "
+                + getTitle() + ", " +
+                getStatus()+ ", " +
                 getDescription();
     }
 

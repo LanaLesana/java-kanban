@@ -22,7 +22,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     public static void main(String[] args) {
         System.out.println("Спринт 6. Тестирование.");
         FileBackedTasksManager fileBackedTasksManager = loadFromFile(new File("/Users/olesia.b/IdeaProjects/java-kanban/src/Service/history.csv"));
-
+        //если указываю "history.csv", то программа перестает работать с файлом. Он всегда пустой.
         fileBackedTasksManager.addTask(new Task(1, "Погулять", "Описание задачи 1", TaskStatus.NEW));
         fileBackedTasksManager.addTask(new Task(2,"Позавтракать", "Описание задачи 2", TaskStatus.NEW));
 
@@ -47,7 +47,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
         fileBackedTasksManager.save();
 
-        System.out.println("Проверка восстановленной информации"); //Не работает. Не вытаскивает из файла строки. Не понимаю, почему.
+        System.out.println("Проверка восстановленной информации");
         fileBackedTasksManager = FileBackedTasksManager.loadFromFile(new File("/Users/olesia.b/IdeaProjects/java-kanban/src/Service/history.csv"));
         System.out.println(fileBackedTasksManager.getTasks());
         System.out.println(fileBackedTasksManager.getSubTasks());
@@ -221,7 +221,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     }
 
     private static Task taskFromString(String value) {
-        String[] split = value.split(",");
+        String[] split = value.split(", ");
         Task task = new Task(Integer.parseInt(split[0]), split[2], split[4], TaskStatus.valueOf(split[3]));
         return task;
     }
@@ -233,13 +233,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         for (Task task : tasks) {
             listOfStrings.add(task.getId().toString());
         }
-        String stringHistory = String.join(",", listOfStrings);
+        String stringHistory = String.join(", ", listOfStrings);
         return stringHistory;
     }
 
     private static List<Integer> historyFromString(String value) {
         List<Integer> historyList = new ArrayList<>();
-        String[] historyArray = value.split(",");
+        String[] historyArray = value.split(", ");
         for (String str : historyArray) {
             historyList.add(Integer.parseInt(str));
         }
@@ -269,15 +269,18 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
             for (int i = 1; i < listOfStrings.size() - 2; i++) {
                 Task task = taskFromString(listOfStrings.get(i));
 
-                if (task.getTitle().toUpperCase().equals(String.valueOf(TaskType.TASK))) {
+                if (listOfStrings.get(i).contains(String.valueOf(TaskType.TASK))) {
                     fileBackedTasksManager.addTaskFromFile(task.getId(), task);
 
-                } else if (task.getTitle().toUpperCase().equals(String.valueOf(TaskType.SUBTASK))) {
-                    SubTask subtask = (SubTask) task;
+                } else if (listOfStrings.get(i).contains(String.valueOf(TaskType.SUBTASK))) {
+                    SubTask subtask = new SubTask(task);
+                    String[] words = listOfStrings.get(i).split(", ");
+                    Integer epicId = Integer.parseInt(words[words.length-1]);
+                    subtask.setEpicId(epicId);
                     fileBackedTasksManager.addSubTaskFromFile(task.getId(), subtask);
 
-                } else if (task.getTitle().toUpperCase().equals(String.valueOf(TaskType.EPIC))) {
-                    Epic epic = (Epic) task;
+                } else if (listOfStrings.get(i).contains(String.valueOf(TaskType.EPIC))) {
+                    Epic epic = new Epic(task);
                     fileBackedTasksManager.addEpicFromFile(task.getId(), epic);
                 }
             }

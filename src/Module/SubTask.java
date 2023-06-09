@@ -4,7 +4,9 @@ import Service.TaskType;
 import java.util.Objects;
 
 public class SubTask extends Task {
-    private int epicId;
+
+
+    private Integer epicId;
 
 
     public SubTask(Integer id, String title, String description, TaskStatus status, int epicId) {
@@ -15,9 +17,17 @@ public class SubTask extends Task {
         super(title, description, status);
         this.epicId = epicId;
     }
+    public SubTask(Task task) {
+        super(task.getId(), task.getTitle(), task.getDescription(), task.getStatus());
+        this.epicId = epicId;
+
+    }
 
     public int getEpicId() {
         return epicId;
+    }
+    public void setEpicId(Integer epicId) {
+        this.epicId = epicId;
     }
 
     @Override
@@ -40,11 +50,11 @@ public class SubTask extends Task {
 
     @Override
     public String toString() {
-        return getId() + ","
-                + TaskType.SUBTASK + ","
-                + getTitle() + "," +
-                getStatus() + "," +
-                getDescription()+ "," +
+        return getId() + ", "
+                + TaskType.SUBTASK + ", "
+                + getTitle() + ", " +
+                getStatus() + ", " +
+                getDescription()+ ", " +
                 getEpicId();
     }
 }

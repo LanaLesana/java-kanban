@@ -83,10 +83,10 @@ public class Task {
 
     @Override
     public String toString() {
-        return getId() + ","
-                + TaskType.TASK + ","
-                + getTitle() + "," +
-                getStatus() + "," +
+        return getId() + ", "
+                + TaskType.TASK + ", "
+                + getTitle() + ", " +
+                getStatus() + ", " +
                 getDescription();
     }
 
