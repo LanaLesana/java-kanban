@@ -1,12 +1,18 @@
 package Module;
 import Service.TaskType;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Collections;
+import java.util.Comparator;
 
 
 public class Epic extends Task {
     private ArrayList<SubTask> subtasks;
+    private LocalDateTime endTime;
+
 
     public Epic(int id, String title, String description, ArrayList<SubTask> subtasks) {
         super(id, title, description, TaskStatus.NEW);
@@ -20,6 +26,26 @@ public class Epic extends Task {
         super(task.getId(), task.getTitle(), task.getDescription(), task.getStatus());
 
     }
+    @Override
+    public LocalDateTime getStartTime() {
+        Collections.sort(subtasks, (subTask1, subTask2) -> subTask1.getStartTime().compareTo(subTask2.getStartTime()));
+        SubTask earliestSubTask = subtasks.get(0);
+        return earliestSubTask.getStartTime();
+
+    }
+    @Override
+    public LocalDateTime getEndTime() {
+        Collections.sort(subtasks, (subTask2, subTask1) -> subTask2.getEndTime().compareTo(subTask1.getEndTime()));
+        SubTask latestSubTask = subtasks.get(subtasks.size() - 1);
+        return latestSubTask.getEndTime();
+
+    }
+
+    @Override
+    public Duration getDuration() {
+        Duration duration = Duration.between(startTime, endTime);
+        return duration;
+    }
 
     public ArrayList<SubTask> getSubtasks() {
         return subtasks;
@@ -32,17 +58,6 @@ public class Epic extends Task {
         }
         return subtaskIds;
     }
-
-    //@Override
-    //public String toString() {
-      //  return "Epic{" +
-          //      "id=" + getId() +
-        //        ", title='" + getTitle() + '\'' +
-              //  ", description='" + getDescription() + '\'' +
-            //    ", status='" + getStatus() + '\'' +
-                //", subtasks=" + subtasks +
-                //'}';
-    //}
 
     @Override
     public String toString() {

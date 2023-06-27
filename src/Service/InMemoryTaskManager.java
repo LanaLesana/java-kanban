@@ -3,15 +3,17 @@ import Module.Epic;
 import Module.Task;
 import Module.SubTask;
 import Module.TaskStatus;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.time.LocalDateTime;
+
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private int nextId;
     private HashMap<Integer, Task> tasks = new HashMap<>();
     private HashMap<Integer, Epic> epics = new HashMap<>();
     private HashMap<Integer, SubTask> subtasks = new HashMap<>();
+
+    private InMemoryHistoryManager userHistory = new InMemoryHistoryManager();
 
     @Override
     public HashMap<Integer, Task> getTasks() {
@@ -28,7 +30,7 @@ public class InMemoryTaskManager implements TaskManager {
         return subtasks;
     }
 
-    private InMemoryHistoryManager userHistory = new InMemoryHistoryManager();
+
 
 
     @Override
@@ -39,14 +41,22 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void addTask(Task task) {
         if (task.getId() != null) {
-            tasks.put(task.getId(), task);
-
+            if (!checkTaskConflicts(task, getExistingTasksAndSubtasks())) {
+                tasks.put(task.getId(), task);
+            } else {
+                System.out.println("Задача конфликтует с существующей задачей.");
+            }
         } else {
             task.setId(nextId);
             nextId++;
-            tasks.put(task.getId(), task);
+            if (!checkTaskConflicts(task, getExistingTasksAndSubtasks())) {
+                tasks.put(task.getId(), task);
+            } else {
+                System.out.println("Задача конфликтует с существующей задачей.");
+            }
         }
     }
+
 
     @Override
     public void addEpic(Epic epic) {
@@ -62,12 +72,20 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void addSubTask(SubTask subtask) {
-        if (subtask.getId() != null ) {
-            subtasks.put(subtask.getId(), subtask);
-        }else {
+        if (subtask.getId() != null) {
+            if (!checkTaskConflicts(subtask, getExistingTasksAndSubtasks())) {
+                subtasks.put(subtask.getId(), subtask);
+            } else {
+                System.out.println("Задача конфликтует с существующей задачей.");
+            }
+        } else {
             subtask.setId(nextId);
             nextId++;
-            subtasks.put(subtask.getId(), subtask);
+            if (!checkTaskConflicts(subtask, getExistingTasksAndSubtasks())) {
+                subtasks.put(subtask.getId(), subtask);
+            } else {
+                System.out.println("Задача конфликтует с существующей задачей.");
+            }
         }
 
         Epic epic = epics.get(subtask.getEpicId());
@@ -135,6 +153,11 @@ public class InMemoryTaskManager implements TaskManager {
     public ArrayList<SubTask> getSubTaskList(HashMap<Integer, SubTask> subtasks) {
         ArrayList<SubTask> subTaskList = new ArrayList<>(subtasks.values());
         return subTaskList;
+    }
+    public ArrayList<Task> getExistingTasksAndSubtasks() {
+        ArrayList<Task> list = getTaskList(tasks);
+        list.addAll(getSubTaskList(subtasks));
+        return list;
     }
 
     @Override
@@ -233,5 +256,27 @@ public class InMemoryTaskManager implements TaskManager {
             userHistory.add(tasks.get(id));
         }
 
+    }
+
+    public ArrayList<Task> getPrioritizedTasks() {
+        Set<Task> prioritizedTasksSet = new TreeSet<>(Comparator.comparing(Task :: getStartTime, Comparator.nullsLast(Comparator.naturalOrder())));
+        prioritizedTasksSet.addAll(getTaskList(tasks));
+        prioritizedTasksSet.addAll(getSubTaskList(subtasks));
+        return new ArrayList<>(prioritizedTasksSet);
+
+    }
+
+    private boolean checkTaskConflicts(Task newTask, List<Task> existingTasks) {
+        for (Task task : existingTasks) {
+            LocalDateTime newTaskStartTime = newTask.getStartTime();
+            LocalDateTime newTaskEndTime = newTask.getEndTime();
+            LocalDateTime existingTaskStartTime = task.getStartTime();
+            LocalDateTime existingTaskEndTime = task.getEndTime();
+
+            if (newTaskStartTime.isBefore(existingTaskEndTime) && newTaskEndTime.isAfter(existingTaskStartTime)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

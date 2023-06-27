@@ -11,6 +11,9 @@ import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.Duration;
 
 public class FileBackedTasksManager extends InMemoryTaskManager implements TaskManager {
     private Path filePath;
@@ -180,7 +183,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     }
 
 
-    private void save() {
+    public void save() {
         try {
         Files.deleteIfExists(Path.of("/Users/olesia.b/IdeaProjects/java-kanban/src/Service/history.csv"));
         }
@@ -193,7 +196,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
              BufferedReader bufferedReader = new BufferedReader(new FileReader(dir))) {
 
             if (bufferedReader.readLine() == null) {
-                String header = ("id,type,name,status,description,epic" + "\n");
+                String header = ("id,type,name,status,description,epic,start_time,end_time,duration" + "\n");
                 bufferedWriter.write(header);
             }
             String lines = toString(this) + "\n" + historyToString(this.getUserHistory());
@@ -221,8 +224,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     }
 
     private static Task taskFromString(String value) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String[] split = value.split(", ");
-        Task task = new Task(Integer.parseInt(split[0]), split[2], split[4], TaskStatus.valueOf(split[3]));
+        Task task = new Task(Integer.parseInt(split[0]), split[2], split[4], TaskStatus.valueOf(split[3]), LocalDateTime.parse(split[5], formatter), LocalDateTime.parse(split[6]), Duration.parse(split[7]));
         return task;
     }
 
@@ -246,7 +250,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         return historyList;
     }
 
-    private static FileBackedTasksManager loadFromFile(File file) {
+    public static FileBackedTasksManager loadFromFile(File file) {
         Path filePath = Path.of(file.toString());
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(filePath);
 
