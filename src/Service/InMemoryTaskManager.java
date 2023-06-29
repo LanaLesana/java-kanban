@@ -3,6 +3,8 @@ import Module.Epic;
 import Module.Task;
 import Module.SubTask;
 import Module.TaskStatus;
+
+import java.io.File;
 import java.time.LocalDateTime;
 
 import java.util.*;
@@ -14,6 +16,7 @@ public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer, SubTask> subtasks = new HashMap<>();
 
     private InMemoryHistoryManager userHistory = new InMemoryHistoryManager();
+    protected final Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime, Comparator.nullsLast(Comparator.naturalOrder())));
 
     @Override
     public HashMap<Integer, Task> getTasks() {
@@ -39,10 +42,16 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
+    public void save() {
+
+    }
+
+    @Override
     public void addTask(Task task) {
         if (task.getId() != null) {
             if (!checkTaskConflicts(task, getExistingTasksAndSubtasks())) {
                 tasks.put(task.getId(), task);
+                prioritizedTasks.add(task);
             } else {
                 System.out.println("Задача конфликтует с существующей задачей.");
             }
@@ -51,6 +60,7 @@ public class InMemoryTaskManager implements TaskManager {
             nextId++;
             if (!checkTaskConflicts(task, getExistingTasksAndSubtasks())) {
                 tasks.put(task.getId(), task);
+                prioritizedTasks.add(task);
             } else {
                 System.out.println("Задача конфликтует с существующей задачей.");
             }
@@ -75,6 +85,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtask.getId() != null) {
             if (!checkTaskConflicts(subtask, getExistingTasksAndSubtasks())) {
                 subtasks.put(subtask.getId(), subtask);
+                prioritizedTasks.add(subtask);
             } else {
                 System.out.println("Задача конфликтует с существующей задачей.");
             }
@@ -83,6 +94,7 @@ public class InMemoryTaskManager implements TaskManager {
             nextId++;
             if (!checkTaskConflicts(subtask, getExistingTasksAndSubtasks())) {
                 subtasks.put(subtask.getId(), subtask);
+                prioritizedTasks.add(subtask);
             } else {
                 System.out.println("Задача конфликтует с существующей задачей.");
             }
@@ -127,6 +139,7 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             epic.setStatus(TaskStatus.NEW);
         }
+        updateEpicTiming(epic);
         epics.put(epic.getId(), epic);
     }
 
@@ -165,14 +178,17 @@ public class InMemoryTaskManager implements TaskManager {
 
         for (Integer id : tasks.keySet()) {
             userHistory.remove(id);
+            prioritizedTasks.remove(getTaskByIdToRemove(id));
         }
         tasks.clear();
+
     }
 
     @Override
     public void clearSubTasks(HashMap<Integer, SubTask> subtasks) {
         for (Integer id : subtasks.keySet()) {
             userHistory.remove(id);
+            prioritizedTasks.remove(getSubTaskByIdToRemove(id));
         }
         subtasks.clear();
         for (Epic epic : epics.values())
@@ -194,6 +210,10 @@ public class InMemoryTaskManager implements TaskManager {
         userHistory.add(task);
         return task;
     }
+    public Task getTaskByIdToRemove(int id) {
+        Task task = tasks.get(id);
+        return task;
+    }
 
     @Override
     public Epic getEpicById(int id) {
@@ -206,6 +226,10 @@ public class InMemoryTaskManager implements TaskManager {
     public SubTask getSubTaskById(int id) {
         SubTask subtask = subtasks.get(id);
         userHistory.add(subtask);
+        return subtask;
+    }
+    public Task getSubTaskByIdToRemove(int id) {
+        SubTask subtask = subtasks.get(id);
         return subtask;
     }
 
@@ -258,13 +282,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     }
 
-    public ArrayList<Task> getPrioritizedTasks() {
-        Set<Task> prioritizedTasksSet = new TreeSet<>(Comparator.comparing(Task :: getStartTime, Comparator.nullsLast(Comparator.naturalOrder())));
-        prioritizedTasksSet.addAll(getTaskList(tasks));
-        prioritizedTasksSet.addAll(getSubTaskList(subtasks));
-        return new ArrayList<>(prioritizedTasksSet);
+    //public ArrayList<Task> getPrioritizedTasks() {
+      //  Set<Task> prioritizedTasksSet = new TreeSet<>(Comparator.comparing(Task :: getStartTime, Comparator.nullsLast(Comparator.naturalOrder())));
+        //prioritizedTasksSet.addAll(getTaskList(tasks));
+        //prioritizedTasksSet.addAll(getSubTaskList(subtasks));
+        //return new ArrayList<>(prioritizedTasksSet);
 
-    }
+
 
     private boolean checkTaskConflicts(Task newTask, List<Task> existingTasks) {
         for (Task task : existingTasks) {
@@ -279,4 +303,17 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return false;
     }
+
+
+    public void updateEpicTiming(Epic epic) {
+        epic.setStartTime(epic.getStartTime());
+        epic.setEndTime(epic.getEndTime());
+        epic.setDuration(epic.getDuration());
+
+    }
+
+
+
+
+
 }

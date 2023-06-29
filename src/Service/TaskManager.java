@@ -3,6 +3,7 @@ import Module.Epic;
 import Module.Task;
 import Module.SubTask;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,9 +35,9 @@ public interface TaskManager {
     public InMemoryHistoryManager getUserHistory();
 
 
+    void save();
 
-
-
-
-
+    static <T extends TaskManager> T loadFromFile(File file) {
+        return null;
+    }
 }

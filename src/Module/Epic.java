@@ -65,7 +65,8 @@ public class Epic extends Task {
                 + TaskType.EPIC + ", "
                 + getTitle() + ", " +
                 getStatus()+ ", " +
-                getDescription();
+                getDescription() + ", " +
+                getStartTimeString() + ", " + getEndTimeString() + ", " + getDuration().toString();
     }
 
     @Override
@@ -77,7 +78,9 @@ public class Epic extends Task {
                 Objects.equals(getTitle(), epic.getTitle()) &&
                 Objects.equals(getDescription(), epic.getDescription()) &&
                 Objects.equals(getStatus(), epic.getStatus()) &&
-                Objects.equals(getSubtasks(), epic.getSubtasks());
+                Objects.equals(getSubtasks(), epic.getSubtasks()) &&
+                Objects.equals(getStartTime(),
+                epic.getStartTime()) && Objects.equals(getDuration(), epic.getDuration());
     }
 
     @Override
@@ -88,4 +91,17 @@ public class Epic extends Task {
         }
         return result;
     }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
 }

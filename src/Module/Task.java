@@ -102,7 +102,8 @@ public class Task {
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
         return getId() == task.getId() && Objects.equals(getTitle(), task.getTitle()) && Objects.equals(getDescription(),
-                task.getDescription()) && Objects.equals(getStatus(), task.getStatus());
+                task.getDescription()) && Objects.equals(getStatus(), task.getStatus()) && Objects.equals(getStartTime(),
+                task.getStartTime()) && Objects.equals(getDuration(), task.getDuration());
     }
 
     @Override
@@ -117,6 +118,12 @@ public class Task {
         }
         if (status != null) {
             hash = hash + status.hashCode();
+        }
+        if(startTime != null) {
+            hash = hash + startTime.hashCode();
+        }
+        if(duration != null) {
+            hash = hash + duration.hashCode();
         }
         hash = hash * 31 + id;
         return hash;

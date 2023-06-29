@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.Duration;
 
-public class FileBackedTasksManager extends InMemoryTaskManager implements TaskManager {
+public class FileBackedTasksManager<T extends TaskManager> extends InMemoryTaskManager implements TaskManager {
     private Path filePath;
 
     public FileBackedTasksManager(Path filePath) {
@@ -299,7 +299,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
             }
             return fileBackedTasksManager;
         }
-
 
     }
 
