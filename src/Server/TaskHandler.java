@@ -74,19 +74,26 @@ public class TaskHandler implements HttpHandler {
             case POST_ADD_OR_UPDATE_TASK:
                 Task task1 = gson.fromJson(new String(exchange.getRequestBody()
                         .readAllBytes(), StandardCharsets.UTF_8), Task.class);
-                taskManager.updateTask(task1);
+                if(task1.getId() == null) {
+                    taskManager.addTask(task1);
+                }else {taskManager.updateTask(task1);}
+
                 writeResponse("Задача добавлена/обновлена", exchange, 200);
                 break;
             case POST_ADD_OR_UPDATE_SUBTASK:
                 SubTask subtask1 = gson.fromJson(new String(exchange.getRequestBody()
                         .readAllBytes(), StandardCharsets.UTF_8), SubTask.class);
-                taskManager.updateTask(subtask1);
+                if(subtask1.getId() == null) {
+                    taskManager.addSubTask(subtask1);
+                }else {taskManager.updateSubTask(subtask1);}
                 writeResponse("Подзадача добавлена/обновлена", exchange, 200);
                 break;
             case POST_ADD_OR_UPDATE_EPIC:
                 Epic epic1 = gson.fromJson(new String(exchange.getRequestBody()
                         .readAllBytes(), StandardCharsets.UTF_8), Epic.class);
-                taskManager.updateTask(epic1);
+                if(epic1.getId() == null) {
+                    taskManager.addEpic(epic1);
+                }else {taskManager.updateEpic(epic1);}
                 writeResponse("Эпик добавлен/обновлен", exchange, 200);
                 break;
             case DELETE_TASKS:
@@ -134,6 +141,12 @@ public class TaskHandler implements HttpHandler {
                     writeResponse("Не удалось удалить задачу", exchange, 500);
                     break;
                 }
+            case GET_PRIORITIZED_TASKS:
+
+                    taskManager.getPrioritizedTasks();
+                    writeResponse("Задачи получены", exchange, 200);
+                    break;
+
             default:
                 writeResponse("Произошла ошибка, проверьте данные запроса", exchange, 500);
 

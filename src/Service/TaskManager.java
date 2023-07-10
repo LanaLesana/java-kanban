@@ -4,9 +4,11 @@ import Module.Task;
 import Module.SubTask;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public interface TaskManager {
 
@@ -33,9 +35,11 @@ public interface TaskManager {
     public void removeEpicById(int id);
     public ArrayList<SubTask> getSubtasksFromEpic (int epicId);
     public InMemoryHistoryManager getUserHistory();
+    public Set<Task> getPrioritizedTasks();
 
 
-    void save();
+
+    void save() throws IOException, InterruptedException;
 
     static <T extends TaskManager> T loadFromFile(File file) {
         return null;

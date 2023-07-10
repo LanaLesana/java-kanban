@@ -16,10 +16,14 @@ import java.time.format.DateTimeFormatter;
 import java.time.Duration;
 
 public class FileBackedTasksManager<T extends TaskManager> extends InMemoryTaskManager implements TaskManager {
-    private Path filePath;
+    private Path filePath; {
+    };
 
     public FileBackedTasksManager(Path filePath) {
         this.filePath = filePath;
+    }
+    public FileBackedTasksManager() {
+
     }
 
     public static void main(String[] args) {

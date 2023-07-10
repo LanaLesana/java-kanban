@@ -5,6 +5,7 @@ import Module.SubTask;
 import Module.TaskStatus;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 import java.util.*;
@@ -13,11 +14,24 @@ public class InMemoryTaskManager implements TaskManager {
     private int nextId;
     private HashMap<Integer, Task> tasks = new HashMap<>();
     private HashMap<Integer, Epic> epics = new HashMap<>();
+
+
+
     private HashMap<Integer, SubTask> subtasks = new HashMap<>();
 
     private InMemoryHistoryManager userHistory = new InMemoryHistoryManager();
     protected final Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime, Comparator.nullsLast(Comparator.naturalOrder())));
 
+
+
+    public HashMap<Integer, SubTask> getSubtasks() {
+        return subtasks;
+    }
+
+    @Override
+    public Set<Task> getPrioritizedTasks() {
+        return prioritizedTasks;
+    }
     @Override
     public HashMap<Integer, Task> getTasks() {
         return tasks;
@@ -42,7 +56,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void save() {
+    public void save()  {
 
     }
 

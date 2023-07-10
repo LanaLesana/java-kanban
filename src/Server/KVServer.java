@@ -28,7 +28,7 @@ public class KVServer {
     }
 
     private void load(HttpExchange h) throws IOException {
-        // TODO Добавьте получение значения по ключу
+
         try {
             System.out.println("\n/load");
             if (!hasAuth(h)) {
@@ -39,8 +39,13 @@ public class KVServer {
             if ("GET".equals(h.getRequestMethod())) {
                 String key = h.getRequestURI().getPath().substring("/load/".length());
                 if (key.isEmpty()) {
-                    System.out.println("Key для сохранения пустой. key указывается в пути: /save/{key}");
+                    System.out.println("Key для сохранения пустой. key указывается в пути: /load/{key}");
                     h.sendResponseHeaders(400, 0);
+                    return;
+                }
+                if (!data.containsKey(key)) {
+                    System.out.println("Не могу достать данные для ключа '" + key + "', данные отсутствуют");
+                    h.sendResponseHeaders(404, 0);
                     return;
                 }
                 sendText(h, data.get(key));
@@ -126,5 +131,10 @@ public class KVServer {
         h.sendResponseHeaders(200, resp.length);
         h.getResponseBody().write(resp);
     }
+
+    public void stop() {
+        server.stop(1);
+    }
 }
+
 

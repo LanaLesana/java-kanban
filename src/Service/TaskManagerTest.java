@@ -257,7 +257,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
    HashMap<Integer, Epic> epicsMap = taskManager.getEpics();
    InMemoryHistoryManager userHistory = taskManager.getUserHistory();
 
-   taskManager.save();
+   //taskManager.save();
 
    taskManager = TaskManager.loadFromFile(new File("/Users/olesia.b/IdeaProjects/java-kanban/src/Service/history.csv"));
    HashMap<Integer, Task> savedTasksMap = taskManager.getTasks();
